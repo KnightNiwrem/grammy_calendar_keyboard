@@ -1,7 +1,7 @@
 {
   "name": "grammy_calendar_keyboard",
   "version": "0.1.0",
-  "description": "Plugin for constructing Formatted Texts in Telegram",
+  "description": "Calendar keyboard plugin for grammY Telegram bots",
   "author": "KnightNiwrem",
   "license": "MIT",
   "main": "dist/mod.js",
@@ -9,13 +9,13 @@
   "engines": {
     "node": ">=14.13.1"
   },
-  "homepage": "https://github.com/grammyjs/parse-mode",
+  "homepage": "https://github.com/KnightNiwrem/grammy_calendar_keyboard",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grammyjs/parse-mode.git"
+    "url": "git+https://github.com/KnightNiwrem/grammy_calendar_keyboard.git"
   },
   "bugs": {
-    "url": "https://github.com/grammyjs/parse-mode/issues"
+    "url": "https://github.com/KnightNiwrem/grammy_calendar_keyboard/issues"
   },
   "scripts": {
     "prepare": "npm run build",
@@ -34,7 +34,11 @@
   ],
   "keywords": [
     "bot",
+    "telegram",
     "grammy",
+    "calendar",
+    "keyboard",
+    "inline-keyboard",
     "middleware"
   ]
 }
