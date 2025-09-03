@@ -66,11 +66,11 @@ interface CalendarOptions {
   // Calendar appearance options
   monthNames?: string[];
   weekDayNames?: string[];
-  
+
   // Behavior options
   minDate?: Date;
   maxDate?: Date;
-  
+
   // Styling options
   navigationButtons?: {
     prev: string;
@@ -114,14 +114,14 @@ bot.start();
 
 ```typescript
 const calendar = new CalendarKeyboard({
-  monthNames: ["Jan", "Feb", "Mar", /* ... */],
+  monthNames: ["Jan", "Feb", "Mar" /* ... */],
   weekDayNames: ["S", "M", "T", "W", "T", "F", "S"],
   minDate: new Date(),
   maxDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // One year from now
   navigationButtons: {
     prev: "⬅️",
-    next: "➡️"
-  }
+    next: "➡️",
+  },
 });
 ```
 
