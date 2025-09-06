@@ -29,22 +29,29 @@ import { calendarMiddleware } from "grammy_calendar_keyboard";
 ## Quick Start
 
 ```ts
-import { Bot } from "grammy";
-import { Calendar, calendarMiddleware } from "grammy_calendar_keyboard";
+import { Bot, Context } from "grammy";
+import {
+  Calendar,
+  type CalendarFlavor,
+  calendarMiddleware,
+} from "grammy_calendar_keyboard";
 import { myAdapter } from "./adapter.ts"; // user-provided StorageAdapter
 
-const bot = new Bot("YOUR_BOT_TOKEN");
+type MyContext = Context & CalendarFlavor;
+
+const bot = new Bot<MyContext>("YOUR_BOT_TOKEN");
 bot.use(calendarMiddleware({ storage: myAdapter }));
 
 bot.command("pick", async (ctx) => {
-  let cal = await ctx.calendar.get("demo");
+  const key = `demo:${ctx.chat?.id ?? ctx.from?.id}`;
+  let cal = await ctx.calendar.get(key);
   if (!cal) cal = new Calendar();
 
   await ctx.reply("Choose a date", {
     reply_markup: cal.render(),
   });
 
-  await ctx.calendar.set("demo", cal);
+  await ctx.calendar.set(key, cal);
 });
 
 bot.start();
