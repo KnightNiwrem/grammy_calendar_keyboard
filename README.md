@@ -1,135 +1,72 @@
-# grammY Calendar Keyboard
+# grammY Calendar Middleware
 
-A customizable calendar keyboard plugin for [grammY](https://grammy.dev/) Telegram bots. This plugin allows you to easily create interactive calendar keyboards for date selection in your Telegram bot conversations.
+A middleware plugin for [grammY](https://grammy.dev/) that attaches a `calendar` helper to `ctx` for managing and rendering calendar keyboards. Data is persisted through any storage adapter implementing grammY's `StorageAdapter`.
 
 ## Features
 
-- 📅 Interactive calendar interface
-- 🎨 Customizable appearance and behavior
-- 🌐 Multi-language support
-- 📱 Mobile-friendly inline keyboards
-- ⚡ Built specifically for grammY framework
-- 🔧 TypeScript support with full type definitions
+- 🗃 Pluggable storage via `StorageAdapter`
+- ⚙️ `ctx.calendar.get` and `ctx.calendar.set` for retrieving and saving calendars
+- 📅 Calendar instances expose navigation helpers and a `render` method returning an inline keyboard
 
 ## Installation
 
-### For Deno
+### Deno
 
-```typescript
-import { CalendarKeyboard } from "https://deno.land/x/grammy_calendar_keyboard/mod.ts";
+```ts
+import { calendarMiddleware } from "https://deno.land/x/grammy_calendar_keyboard/mod.ts";
 ```
 
-### For Node.js
+### Node.js
 
 ```bash
 npm install grammy_calendar_keyboard
 ```
 
-```typescript
-import { CalendarKeyboard } from "grammy_calendar_keyboard";
+```ts
+import { calendarMiddleware } from "grammy_calendar_keyboard";
 ```
 
 ## Quick Start
 
-```typescript
+```ts
 import { Bot } from "grammy";
-import { CalendarKeyboard } from "grammy_calendar_keyboard";
+import { Calendar, calendarMiddleware } from "grammy_calendar_keyboard";
+import { myAdapter } from "./adapter.ts"; // user-provided StorageAdapter
 
 const bot = new Bot("YOUR_BOT_TOKEN");
+bot.use(calendarMiddleware({ storage: myAdapter }));
 
-// Create a calendar keyboard instance
-const calendar = new CalendarKeyboard();
+bot.command("pick", async (ctx) => {
+  let cal = await ctx.calendar.get("demo");
+  if (!cal) cal = new Calendar();
 
-// Handle the /calendar command
-bot.command("calendar", (ctx) => {
-  return ctx.reply("Please select a date:", {
-    reply_markup: calendar.createKeyboard(),
+  await ctx.reply("Choose a date", {
+    reply_markup: cal.render(),
   });
-});
 
-// Handle calendar interactions
-bot.use(calendar.middleware());
+  await ctx.calendar.set("demo", cal);
+});
 
 bot.start();
 ```
 
-## API Reference
+## API
 
-### CalendarKeyboard
+### `ctx.calendar`
 
-The main class for creating calendar keyboards.
+Control panel for calendar instances.
 
-#### Constructor Options
+- `get(key: string): Promise<Calendar | undefined>`
+- `set(key: string, calendar: Calendar): Promise<void>`
 
-```typescript
-interface CalendarOptions {
-  // Calendar appearance options
-  monthNames?: string[];
-  weekDayNames?: string[];
+### `Calendar` object
 
-  // Behavior options
-  minDate?: Date;
-  maxDate?: Date;
+Represents calendar state.
 
-  // Styling options
-  navigationButtons?: {
-    prev: string;
-    next: string;
-  };
-}
-```
+- Helpers for navigating months and selecting days
+- `render(): InlineKeyboardMarkup` – renders an inline keyboard that looks like a monthly calendar
 
-#### Methods
-
-- `createKeyboard(date?: Date)` - Creates a calendar keyboard for the specified month
-- `middleware()` - Returns grammY middleware for handling calendar interactions
-- `onDateSelect(callback)` - Registers a callback for date selection events
-
-## Examples
-
-### Basic Usage
-
-```typescript
-import { Bot } from "grammy";
-import { CalendarKeyboard } from "grammy_calendar_keyboard";
-
-const bot = new Bot("YOUR_BOT_TOKEN");
-const calendar = new CalendarKeyboard();
-
-bot.command("schedule", (ctx) => {
-  return ctx.reply("When would you like to schedule this?", {
-    reply_markup: calendar.createKeyboard(),
-  });
-});
-
-calendar.onDateSelect((ctx, date) => {
-  return ctx.editMessageText(`You selected: ${date.toDateString()}`);
-});
-
-bot.use(calendar.middleware());
-bot.start();
-```
-
-### Custom Configuration
-
-```typescript
-const calendar = new CalendarKeyboard({
-  monthNames: ["Jan", "Feb", "Mar" /* ... */],
-  weekDayNames: ["S", "M", "T", "W", "T", "F", "S"],
-  minDate: new Date(),
-  maxDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // One year from now
-  navigationButtons: {
-    prev: "⬅️",
-    next: "➡️",
-  },
-});
-```
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Setup
+## Development
 
 1. Clone the repository
 2. Install Deno
@@ -139,15 +76,4 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- 📖 [Documentation](https://github.com/KnightNiwrem/grammy_calendar_keyboard#readme)
-- 🐛 [Report Issues](https://github.com/KnightNiwrem/grammy_calendar_keyboard/issues)
-- 💬 [grammY Community](https://grammy.dev/guide/introduction.html)
-
-## Related Projects
-
-- [grammY](https://grammy.dev/) - The main grammY framework
-- [grammY plugins](https://grammy.dev/plugins/) - Official grammY plugins
+MIT © [Contributors](LICENSE)
