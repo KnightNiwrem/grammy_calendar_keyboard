@@ -32,14 +32,31 @@ This project provides a middleware plugin for [grammy](https://grammy.dev/), the
 
 ### `ctx.calendar` API
 
-- `get(key: string)` – retrieves a calendar object from storage using the supplied key.
-- `set(key: string, calendar: Calendar)` – saves the provided calendar object using the storage adapter.
+- `get(key: string): Promise<Calendar | null>` – asynchronously retrieves a calendar instance for `key`. The helper loads a serialized
+  `CalendarState` from storage and rehydrates it using a factory such as `Calendar.fromState`.
+- `set(key: string, calendar: Calendar): Promise<void>` – asynchronously persists the calendar by serializing it to a
+  plain `CalendarState` and saving it through the storage adapter.
 
 ### Calendar Object
 
 - Encapsulates state such as current month, selected date, and navigation context.
 - Provides manipulation helpers (e.g., move to next/previous month, select a day).
 - Exposes a `render` method that returns an `InlineKeyboardMarkup` whose buttons form a calendar for the specified month.
+- Provides a `toState()` method for producing a serializable `CalendarState`.
+- Supports restoration via `Calendar.fromState(state)` or `CalendarFactory.create(state)` to rebuild methods and derived fields.
+
+### CalendarState
+
+- Plain JSON‑safe data persisted by the storage adapter.
+- Required fields: `currentMonth`, `selectedDate`, `navigationContext`, `version`.
+- Include only primitive or JSON‑safe values; adapters store raw state and application code rehydrates class instances.
+- The `version` field enables migrations; factories should handle older schema versions when deserializing.
+
+### Storage Adapter Contract
+
+- `get(key: string): Promise<CalendarState | null>` – fetches the stored state for `key`, returning `null` if none exists.
+- `set(key: string, state: CalendarState): Promise<void>` – persists the provided state. Implementations must store only plain
+  data so it can be serialized via JSON.
 
 ## UX Requirements
 
@@ -54,8 +71,8 @@ This project provides a middleware plugin for [grammy](https://grammy.dev/), the
 
 ## Milestones
 
-1. **Storage integration** – accept any `StorageAdapter` and persist calendar objects.
-2. **Context helper** – provide `ctx.calendar` with `get` and `set` methods.
+1. **Storage integration** – accept any `StorageAdapter` and persist calendar state.
+2. **Context helper** – provide `ctx.calendar` with asynchronous `get` and `set` methods.
 3. **Calendar rendering** – generate inline keyboard layouts for monthly calendars.
 4. **Manipulation methods** – support navigation and selection on calendar objects.
 
