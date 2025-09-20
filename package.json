@@ -22,12 +22,12 @@
     "build": "deno2node tsconfig.json"
   },
   "devDependencies": {
-    "@types/node": "^16.6.1",
-    "deno2node": "^1.8.1",
-    "grammy": "^1.36.1"
+    "@types/node": "^24.5.0",
+    "deno2node": "^1.16.0",
+    "grammy": "^1.38.2"
   },
   "peerDependencies": {
-    "grammy": "^1.36.1"
+    "grammy": "^1.38.2"
   },
   "files": [
     "dist/"
