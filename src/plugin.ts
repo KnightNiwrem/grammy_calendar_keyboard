@@ -43,14 +43,19 @@ export function createCalendarPlugin<C extends Context = Context>(
         return { ...(config ?? {}), defaultLabel: defaultLabel };
     };
 
+    const readCalendar = async (id: string): Promise<Calendar | undefined> => {
+        const stored = await storage.read(id) as unknown;
+        return Calendar.revive(stored);
+    };
+
     const controlPanel: CalendarControlPanel = {
-        get: async (id) => await storage.read(id),
+        get: async (id) => await readCalendar(id),
         set: async (id, calendar) => {
             await storage.write(id, calendar);
             return calendar;
         },
         create: async (id, config) => {
-            const existing = await storage.read(id);
+            const existing = await readCalendar(id);
             if (existing) return existing;
             const created = new Calendar(ensureConfig(config));
             await storage.write(id, created);

@@ -15,5 +15,9 @@
     "./package-lock.json",
     "./test/cov_profile"
   ],
-  "fmt": { "proseWrap": "preserve" }
+  "fmt": { "proseWrap": "preserve" },
+  "imports": {
+    "@std/testing/bdd": "jsr:@std/testing@1.0.15/bdd",
+    "@std/expect": "jsr:@std/expect@1.0.17"
+  }
 }
